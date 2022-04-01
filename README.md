@@ -9,13 +9,13 @@ In 1994 Nick Zabo proposed a new technology called smart contract.
 
 Ethereum takes this blockchain technology one step further because it can create smart contracts.
 
-A **Smart Contract** is a self execution sets of instructions, without 3rd parties involved. A smart contract come to life in a decentralized enviroment called blockchain.  
-Like a regular contract but its totally written in code, the therms of the agreement are written in code.
+A **Smart Contract** is a self execution sets of instructions, without 3rd parties involved. A smart contract come to life in a decentralized environment called blockchain.  
+Like a regular contract but its totally written in code, the terms of the agreement are written in code.
 
 This revolutionary technology despite many advantages comes with a fatal flaw know as a **The Oracle Problem**.
 
 
-This blockchain are deterministic systems basically meaning that everything that happens in this system happens happens in this wall guarded closed box, but if you want it to be this digital superior agreements they need to  interact with the real world and get data from the external world.
+This blockchain are deterministic systems basically meaning that everything that happens in this system happens in this wall guarded closed box, but if you want it to be this digital superior agreements they need to  interact with the real world and get data from the external world.
 
 **Oracles** are devices that bring data or execute some type of external computation and they do it also in a decentralized manner in order to keep data and off-chain computation also decentralized like the smart contract, because centralized
 
@@ -153,7 +153,7 @@ BMep7B8uYX0H3NVSS+ECQQDaP+8Zn4rEAT2rCoRQ/cfkVn8YGqKlJJfdseekEbB+5
 egFcEK+lasdMjNvC9l2Wm+URc4qkjddffrXK/11tSzDD
 -----END RSA PRIVATE KEY-----
 
-**Public Key** a genereted string trhough a one way algorithm using the private key as a seed. Usally the algorithm is called Elliptic Curve Digital Signature Algorithm
+**Public Key** a genereted string trhough a one way algorithm using the private key as a seed. Usually the algorithm is called Elliptic Curve Digital Signature Algorithm
 
 See axample: https://andersbrownworth.com/blockchain/public-private-keys/keys
 
@@ -174,7 +174,7 @@ Consensus protocol can be split in two main parts:
 
 **Sybil Resistance Mechanism** a way to define who is the block author to defend against user creating a large number of pseudo anonymous identities to gain a disproportional advantages influence over the set system.
 
-**Prof of work** (or PoW) a node has to go trough a very difficult computation problem, in simple therm is finding a NONCE (A nonce is an abbreviation for "number only used once") that generates a SHA with the given number of zeros.
+**Prof of work** (or PoW) a node has to go trough a very difficult computation problem, in simple terms is finding a NONCE (A nonce is an abbreviation for "number only used once") that generates a SHA with the given number of zeros.
 Some blockchain make this problem harder or easy in order to change the **block time** is how long it takes to block to publish.
 
 **Chain Selection** bitcoin and ethereum use **Nakamoto Consensus** a combination of prof of work and longest chain role. Whichever node who has the longest chain is going to be the chain that they use.
@@ -201,12 +201,11 @@ Cons: slight less decentralized mechanism due to the costs it takes to participa
 Both of these attacks are very difficult to do in proof of work and proof of stake.
 
 ## Scalability Problem
-The more nodes want to participate in transactions and in validating the more it costs to make a transaction (gas fee rices).
+The more nodes want to participate in transactions and in validating the more it costs to make a transaction (gas fee rises).
 
 ETH 2 will solve this with Sharding.
 
 **Sharding** is a blockchain of blockchains increases the number of transactions in under layers of the main blockchain.
-.
 
 **Layer 1** Base layer blockchain implementation like Bitcoin Ethereum, Avalanche.
 
@@ -216,13 +215,30 @@ ETH 2 will solve this with Sharding.
 https://ethereum.org/en/developers/docs/scaling/layer-2-rollups/
 
 ---
-## Remix
-Is an online code editor for Solidity. Solidity is the name of the lenguage in which the smart contracts are coded in Ethereum Network.
+## Lesson 1: REMIX IDE & intro to SOLIDITY
+>Video minute 1:30:40
 
-Solidity version and variable types
+The default go to IDE to start programming smart contract.
+Is an online code editor for Solidity. Solidity is the name of the language in which the smart contracts are coded in Ethereum Network.
+
+> IDE Integrated Development Environment
+
+### Variables
+These are the types of variables you can have in Solidity:
+
+- integers
+- booleans
+- strings
+- unsigned integers
+- address
+- bytes object 32 bytes
+
+Its declaration would be as follows:
 
 ```solidity
 pragma solidity ^0.6.6;
+
+### Variables types and declaration
 
 contract myFirstContract {
 
@@ -235,8 +251,9 @@ contract myFirstContract {
 }
 ```
 
-contract is a keyword in solidity.
+> "contract" is a reserved keyword in solidity.
 
+Lets create our first contract:
 
 ```
 pragma solidity ^0.6.0;
@@ -254,14 +271,14 @@ contract simpleStorage {
 
 ```
 
-Visibility
-Declared after the vribale type, is the scope in which functions can be called or accessed.
+> "//" is the way of creating comments in solidity
+
+### Visibility
+is the scope in which functions can be called or accessed. Is declared after the variable type.
 
 >See more at https://docs.soliditylang.org/en/v0.7.3/contracts.html#visibility-and-getters
 
 If we don't explicitly give a visibility keyword it will automatically will be set to  internal.
-
-
 
 **Public** can be called by anybody including variables.
 
@@ -273,15 +290,16 @@ If we don't explicitly give a visibility keyword it will automatically will be s
 
 If not set will automatically will be set to **Internal**
 
-Functions
+### Functions
 
-Note: State-Changing Functions calls are also called **transactions**.
+> Note: "state-changing" functions calls are also called **transactions**.
 
 There are two special keywords that define the type of function in which you don't have to make a transaction: view and pure
 
-**view** keyword means your are reading some state of the blockchain. Public variables also have view function.
+**View** keyword means you are reading some state of the blockchain. Public variables also have view function.
 
-**pure** pure functions are those who only do some type of math. Does not change the state of the blockchain
+**Pure** are those who only do some type of math. Does not change the state of the blockchain
+
 
 
 ```
@@ -291,6 +309,7 @@ contract simpleStorage { //global
 
   //this will get initialized to 0
   unit256  favoriteNumber;
+  bool favoriteBool;
 
   function store(uint256 _favoriteNumber) public{
     favoriteNumber = _favoriteNumber;
@@ -306,23 +325,22 @@ contract simpleStorage { //global
 }
 
 ```
-## scope
+### Scope
+Global are defined in the outer most layer of the contract.
+Function defined variables are only know to that function context.
 
-Global defined in the outer most layer of the contract.
-Function defined variables are only know to that functions
-
-
-## Structs
+### Structs
 
 Are ways to define new types in solidity
 
-Example of a srtuct:
+Example of a struct:
 ```
 pragma solidity ^0.6.0;
 
 contract simpleStorage {
 
   unit256  favoriteNumber;
+  bool favoriteBool;
 
   struct People {
     uint favoriteNumber;
@@ -331,7 +349,7 @@ contract simpleStorage {
 
   People[] public people;
 
-  //to initialize inside of contract we woul do:
+  //to initialize inside of contract we would do:
   //People public person = People({favoriteNumber:2, name: "Patric"})
 
   function store(uint256 _favoriteNumber) public{
@@ -349,12 +367,13 @@ contract simpleStorage {
 
 ```
 
-## Arrays
-A way of storing a list of an object or type
-
+### Arrays
+A way of storing a list of an object or type, it is initialized with 'name' + square brackets
+```
 People[] public people;
+```
 
-Means an array of people object public visibility called people, in this case is a Dynamic array because it can change size.
+Means an array of people object public visibility called people, in this case is a **Dynamic** array because it can change size.
 
 People[1] public people;  
 Would be an array with a maximum of 1 people
@@ -366,8 +385,46 @@ function addPerson(string memory _name, uint256 _favoriteNumber) public {
   people.push(People({favoriteNumber: _favoriteNumber, name: _name}))
 }
 ```
+So the finished contract looks like this:
+```
+pragma solidity ^0.6.0;
 
-## Memory and Storage
+contract simpleStorage {
+
+  uint256  favoriteNumber;
+
+  struct People {
+    uint favoriteNumber;
+    string name;
+  }
+
+  People[] public people;
+
+  //to initialize inside of contract we would do:
+  //People public person = People({favoriteNumber:2, name: "Patric"})
+
+  function store(uint256 _favoriteNumber) public{
+    favoriteNumber = _favoriteNumber;
+  }
+
+  function retrieve() public view returns(uint256){
+    return favoriteNumber;
+  }
+
+  function addNumber(uint256 _favoriteNumber) public pure returns(uint256){
+  return _favoriteNumber + _favoriteNumber;
+  }
+
+
+  function addPerson(string memory _name, uint256 _favoriteNumber) public {
+    people.push(People(_favoriteNumber, _name));
+    }
+
+}
+
+```
+
+### Memory and Storage
 
 In solidity you will often see these keywords on functions, those are ways to store with information.
 
@@ -379,7 +436,7 @@ In solidity you will often see these keywords on functions, those are ways to st
 A string is actually an object, so we have to decide where we want it to store it. So whenever using a parameter to define a function we need to call string memory.
 
 
-## Mappings
+### Mappings
 A data structure like dictionary type, that takes in some type of key a returns data associated with it.
 
 
@@ -387,13 +444,16 @@ A data structure like dictionary type, that takes in some type of key a returns 
 mapping(string => uint256) public nameTOFavorteNumber
 ```
 
-and add the corresponding part to the addPerson function and lets add a License:
+and add the corresponding part to the addPerson function:
 ```
   nameToFavoriteNumber[_name] = _favoriteNumber;
 ```
 
+Also we will add License Identifier at the top.
 
-so all the Contract will be:
+So all the Contract will be:
+
+
 
 ```
 // SPDX-License-Identifier: MIT
@@ -402,10 +462,9 @@ pragma solidity ^0.6.0;
 
 contract simpleStorage {
 
-  //this will get initialized to 0
   uint256  favoriteNumber;
 
-    struct People {
+  struct People {
     uint favoriteNumber;
     string name;
   }
@@ -413,28 +472,38 @@ contract simpleStorage {
   People[] public people;
   mapping(string => uint256) public nameToFavoriteNumber;
 
+  //to initialize inside of contract we would do:
+  //People public person = People({favoriteNumber:2, name: "Patric"})
+
   function store(uint256 _favoriteNumber) public{
     favoriteNumber = _favoriteNumber;
   }
 
   function retrieve() public view returns(uint256){
-    return favoriteNumber
+    return favoriteNumber;
   }
+
+  function addNumber(uint256 _favoriteNumber) public pure returns(uint256){
+  return _favoriteNumber + _favoriteNumber;
+  }
+
 
   function addPerson(string memory _name, uint256 _favoriteNumber) public {
-  people.push(People({favoriteNumber: _favoriteNumber, name: _name}));
-  nameToFavoriteNumber[_name] = _favoriteNumber;
-  }
+    people.push(People(_favoriteNumber, _name));
+    nameToFavoriteNumber[_name] = _favoriteNumber;
+    }
 
 }
-
 ```
 
-## EVM
+### EVM
 
-Ethereum Virtual Machine is refereed to the overall ecosystem in which all the interactions are done in the Ethereum Network. A lot of blochains are EVM compatible.
+Ethereum Virtual Machine is refereed to the overall ecosystem in which all the interactions are done in the Ethereum Network. A lot of Blockchains are **EVM compatible.**
 
-## Lesson 1: Factory Pattern
+###
+
+## Lesson 2: Factory Pattern
+> Video minute
 
 The idea of the factory pattern is to have a contract (the factory) that will carry the mission of creating other contracts. (2)
 
@@ -558,9 +627,9 @@ contract StorageFactory {
 
 ## Inheritace
 
-Since our orignal contract has many cool features, whta if we wanted our StorageFactory to be a simple storage on itself, that is when inheritance becomes handy.
+Since our orignal contract has many cool features, what if we wanted our StorageFactory to be a simple storage on itself, that is when inheritance becomes handy.
 
-In order to StoreFactory to have all properties anf cunctions we need to created with the "is" key word like this:
+In order to StoreFactory to have all properties and functions we need to created with the "is" key word like this:
 
 
 ```
