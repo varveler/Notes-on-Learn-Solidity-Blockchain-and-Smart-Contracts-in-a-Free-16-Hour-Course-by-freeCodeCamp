@@ -503,9 +503,9 @@ Ethereum Virtual Machine is refereed to the overall ecosystem in which all the i
 ###
 
 ## Lesson 2: Factory Pattern
-> Video minute
+> Video time 2:09:00
 
-The idea of the factory pattern is to have a contract (the factory) that will carry the mission of creating other contracts. (2)
+The idea of the factory pattern is to have a contract (the factory) that will carry the mission of creating other contracts.
 
 What if I want have a lot of these contract deployed to give people the power to save their favorite number.
 
@@ -529,6 +529,7 @@ contract StorageFactory {
         simpleStorageArray.push(simpleStorage);
     }
 
+    //store factory store
     function sfStore(uint256 _simpleStorageIndex, uint256 _simpleStorageNumber) public {
         SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]));
         simpleStorage.store(_simpleStorageNumber);
@@ -536,6 +537,7 @@ contract StorageFactory {
 }
 
 ```
+Code explanation:
 
 First we import our previous contract to interact with it.
 
@@ -560,7 +562,7 @@ function createSimpleStorage() public {
 }
 ```
 
-In the previous lines we create a new variable type of "SimpleStorage" contract named "simpleStorage" that is equal to an initialize "SimpleStorage()" with no input parameters.
+In the previous lines we create a new variable type of "SimpleStorage"  contract named "simpleStorage" that is equal to an initialize "SimpleStorage()" with no input parameters.
 
 Every time we deploy a new contract we will add it to our newly  created array simpleStorageArray with this previous line of code "simpleStorageArray.push(simpleStorage);"
 
@@ -595,8 +597,36 @@ Now our contract is almost complete, we need a way to get our saved number so we
    return simpleStorage.retrieve();
  }
 ```
+So the finall code looks like this:
 
-Finally we couuld refactor our contract to avoid saving into a variable and do the push to array and store our value like this:
+```
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.0;
+
+
+contract StorageFactory {
+    SimpleStorage[] public simpleStorageArray;
+
+    function createSimpleStorage() public {
+        SimpleStorage simpleStorage = new SimpleStorage();
+        simpleStorageArray.push(simpleStorage);
+    }
+
+    function sfStore(uint256 _simpleStorageIndex, uint256 _simpleStorageNumber) public {
+      SimpleStorage simpleStorage = SimpleSrotage(address(simpleStorageArray[_simpleStorageIndex]));
+      simpleStorage.store(_simpleStorageNumber)
+    }
+
+    function sfGet(uint256 _simpleStorageIndex) public view returns (uint256){
+      SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]))
+      return simpleStorage.retrieve();
+    }
+
+```
+
+
+Finally we could refactor our contract to avoid saving into a variable and do the push to array and store our value like this:
 
 ```
 // SPDX-License-Identifier: MIT
@@ -627,26 +657,49 @@ contract StorageFactory {
 
 ## Inheritace
 
-Since our orignal contract has many cool features, what if we wanted our StorageFactory to be a simple storage on itself, that is when inheritance becomes handy.
+Since our original contract has many cool features, what if we wanted our StorageFactory to be a simple storage on itself, that is when inheritance becomes handy.
 
 In order to StoreFactory to have all properties and functions we need to created with the "is" key word like this:
 
-
 ```
 contract StorageFactory is SimpleStorage {
-
+  //  everything else ...
 }
 ```
+https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
 
+## Lesson 3: Fund Me
+> Video time 2:26:23
 
-# 2:26:00
+Now lets create a function that accepts some type of payment. A new keyword is **payable** which means a function can accept funds.
 
-
-
-
-
-
-```
+Every time you call a function  has an associated value to it, you can always append a "value" of the number of wei or gwei or finney or eth will be sent to the function if it is a payable function.
 
 ```
-2 https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
+// SPDX-License-Identifier: MIT
+
+pragma solidity >=0.6.0 <0.9.0;
+
+contract FundMe{
+  function fund() public payable{
+
+  }
+}
+```
+To keep track of who is sending funds to our contract lets create a contract with a mapping of addresses and value like this:
+
+```
+// SPDX-License-Identifier: MIT
+
+pragma solidity >=0.6.0 <0.9.0;
+
+contract FundMe{
+
+  mapping(address => uint256) public addressToAmountFunded
+
+  function fund() public payable{
+    addressToAmountFunded[msg.sender] += msg.value;
+  }
+}
+```
+**msg.sender** and **msg.value** are keyword in every contract and transaction that specify the amount sent and the sender.
