@@ -655,7 +655,7 @@ contract StorageFactory {
 }
 ```
 
-## Inheritace
+### Inheritace
 
 Since our original contract has many cool features, what if we wanted our StorageFactory to be a simple storage on itself, that is when inheritance becomes handy.
 
@@ -703,3 +703,170 @@ contract FundMe{
 }
 ```
 **msg.sender** and **msg.value** are keyword in every contract and transaction that specify the amount sent and the sender.
+
+But what if we wanted to send funds in USD insetead of ETH??
+we would need to know the convertion rate from ETH to USD
+
+How and where are we are getting this data from??
+
+## Decentralized Oracle Network Chainlink
+
+Since blockchain can reach consensus on deterministic matters but can't on non-deterministic we need a way to get some information that is also decentralized as the blockchain.
+
+For example an api call, getting a random number or the price of a certain token or cryptocurrency.
+
+Centralized oracles are single point of failures so we need a decentralized oracles to provide a more robust infrastructure to our contracts.
+
+Data feeds from **ChainLink** can be found at data.chain.link
+
+> data.chain.link
+
+They already are been used by top protocols like AAVE, SushiSwap, Synthetix, Set Protocol.
+
+> https://docs.chain.link/docs/get-the-latest-price/
+
+We can find an example to open in Remix:
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
+contract PriceConsumerV3 {
+
+    AggregatorV3Interface internal priceFeed;
+
+    /**
+     * Network: Kovan
+     * Aggregator: ETH/USD
+     * Address: 0x9326BFA02ADD2366b30bacB125260Af641031331
+     */
+    constructor() {
+        priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    }
+
+    /**
+     * Returns the latest price
+     */
+    function getLatestPrice() public view returns (int) {
+        (
+            /*uint80 roundID*/,
+            int price,
+            /*uint startedAt*/,
+            /*uint timeStamp*/,
+            /*uint80 answeredInRound*/
+        ) = priceFeed.latestRoundData();
+        return price;
+    }
+}
+```
+
+To add price data feed we need to import to our contract:
+```
+import "@chainlink/contracts/src/v.06/interfaces/AggregatorV3Interface"
+```
+
+### Interfaces
+
+> source: https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol
+
+Interfaces don't have full function implementations.
+In solidity contracts don't natively understand how to interact with another contract we have to tell solidity what function can be called in another contract and this is where interfaces come into play.
+
+Interfaces compile down to an ABI (Application Binary Interface)
+
+The **ABI** tells solidity and other programming languages how it can interact with another contract.
+
+Anytime you want to interact with an already deployed smart contract you will need an ABI
+
+
+
+importing is the same as pasting the whole code so for simplicity we will paste all code so our contract will look like this:
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+interface AggregatorV3Interface {
+
+  function decimals()
+    external
+    view
+    returns (
+      uint8
+    );
+
+  function description()
+    external
+    view
+    returns (
+      string memory
+    );
+
+  function version()
+    external
+    view
+    returns (
+      uint256
+    );
+
+  // getRoundData and latestRoundData should both raise "No data present"
+  // if they do not have data to report, instead of returning unset values
+  // which could be misinterpreted as actual reported values.
+  function getRoundData(
+    uint80 _roundId
+  )
+    external
+    view
+    returns (
+      uint80 roundId,
+      int256 answer,
+      uint256 startedAt,
+      uint256 updatedAt,
+      uint80 answeredInRound
+    );
+
+  function latestRoundData()
+    external
+    view
+    returns (
+      uint80 roundId,
+      int256 answer,
+      uint256 startedAt,
+      uint256 updatedAt,
+      uint80 answeredInRound
+    );
+
+}
+
+contract FundMe{
+
+  mapping(address => uint256) public addressToAmountFunded;
+
+  function fund() public payable{
+    addressToAmountFunded[msg.sender] += msg.value;
+  }
+
+  function getVersion() public view returns (uint256){
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    return priceFeed.version();
+  }
+
+  function getPrice() public view returns(uint256){
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    (uint80 roundId,
+      int256 answer,
+      uint256 startedAt,
+      uint256 updatedAt,
+      uint80 answeredInRound)
+      = priceFeed.latestRoundData();
+      return uint256(answer);
+  }
+
+}
+```
+
+A **Tuple** is alist of objects of potentially different types whose number is a constant at compile-time.
+
+2:50:00
