@@ -869,4 +869,136 @@ contract FundMe{
 
 A **Tuple** is alist of objects of potentially different types whose number is a constant at compile-time.
 
-2:50:00
+Finally we can clean our code to make it look more clean by removing the unused variables in our getPrice function like this:
+
+```
+function getPrice() public view returns(uint256){
+  AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+  (,int256 answer,,,) = priceFeed.latestRoundData();
+    return uint256(answer);
+}
+```
+
+"(,int256 answer,,,)" means we are going to ignore the first one, and from the third to the last one, we are only using the second one which is "answer" price.
+
+
+Also we are going to use a regular import to make our code look more clean by removing the interface and just import it from source:
+```
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+```
+
+#### Matching Units (GWEI/WEI/ETH)
+> Video minute: 2:53:53
+
+One other thing we can do is put our contract in gewi/wei standard. Since our answer returns lready with 8 decimal we need to add 10 in order to be in wei.
+
+```
+function getPrice() public view returns(uint256){
+  AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+  (,int256 answer,,,) = priceFeed.latestRoundData();
+    return uint256(answer * 10000000000);
+}
+```
+
+Also we can convert whatever value their send us and see if this is grater than ie 50 USD. So we need another function to make the conversion to USD:
+```
+function getConversionRate(uint256 ethAmount) public view returns (uint256){
+  uint256 ethPrice = getPrice();
+  uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
+  return ethAmountInUsd;
+}
+```
+
+We have to divide by 1000000000000000000 because currently our get price and our ethAmount have many extra zeros.
+
+### SafeMath & Integer Overflow
+> Video minute 2:58:38
+
+Prior to Solidty v0.08 you had to be aware of integer overflow, so everytime one variable of type uint8 for ex. reaches his maximum of 255 value will rotate to zero so 255 + 1 will be equal to 0.
+
+There are some libraries to prevent this like SafeMath
+
+```
+import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+```
+
+**Library** is similar to contracts but heir purpose is that they are deployed inly once at a specific address and their code is reused.
+
+Fortunately Solidty v0.8 now checks for integer Overflow but make sure if you are using an older version you may want to use SafeMath.
+
+In our contract to use a "safe" uint256 we would need this when creating our contract:
+```
+(...)
+import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+contract FundMe{
+  using SafeMathChainlink for uint256;
+  (...)
+}
+```
+
+**Using** keyword means the directive using A for B; it can be used to attach library functions (from the library A) to any type (B) in the context of a contract.
+
+So now we can update our fund function to accept a minimum of 50 USD:
+
+```
+function fund() public payable{
+  // $50
+  uint256 minimumUSD = 50 * 10 ** 18 // multiply by ten raised to the 18 so that everything has 18 decimals
+  // to check if has 50 USD minimum we can do:
+  // if(msg.value < minimumUSD){
+  //  revert?
+  // }
+  // or cleaner:
+  require(getConversionRate(msg.value) >= minimumUSD, "More eth is needed"); // we add an error message
+  addressToAmountFunded[msg.sender] += msg.value;
+}
+```
+
+**require** when a function call reaches a require statement will check the truthiness of whatever your require asks. If fails the function will stop and do a **Revert**
+
+So the whole contract will look like this:
+```
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.6.6 <0.9.0;
+
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+
+contract FundMe{
+    using SafeMathChainlink for uint256;
+
+  mapping(address => uint256) public addressToAmountFunded;
+
+  function fund() public payable{
+    // $50
+    uint256 minimumUSD = 50 * 10 ** 18; // multiply by ten raised to the 18 so that everything has 18 decimals
+    require(getConversionRate(msg.value) >= minimumUSD, "More eth is needed"); // second parameter is error message
+    addressToAmountFunded[msg.sender] += msg.value;
+  }
+
+  function getVersion() public view returns (uint256){
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    return priceFeed.version();
+  }
+
+  function getPrice() public view returns(uint256){
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    (,int256 answer,,,) = priceFeed.latestRoundData();
+    // ETH/USD rate in 18 digit
+    return uint256(answer * 10000000000);
+  }
+
+  function getConversionRate(uint256 ethAmount) public view returns (uint256){
+  uint256 ethPrice = getPrice();
+  uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
+  return ethAmountInUsd;
+  // 0.000000296998112574
+  }
+}
+
+```
+
+### Whitdraw
+
+> Video Minute 3:08:20 
+:
